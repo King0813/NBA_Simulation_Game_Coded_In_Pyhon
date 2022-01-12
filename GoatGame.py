@@ -2,7 +2,7 @@ shootingGuard5 = 'Michael Jordan'
 shootingGuard4 = 'Kobe Bryant'
 shootingGuard3 = 'Allen Iverson'
 shootingGuard2 = 'Dwayne Wade'
-shootingGuard1 = 'Ray Allen'
+shootingGuard1 = 'Mitch Richmond'
 
 powerForward5 = 'Tim Duncan'
 powerForward4 = 'Kevin Garnett'
