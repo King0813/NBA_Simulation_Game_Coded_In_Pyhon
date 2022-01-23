@@ -277,47 +277,20 @@ for row in table:
         print("The computer has scored: ", computer_team_scoring_total, "total team points")
         print("The computer has ", computer_remaining_funds, "remaining in its salary cap")
         
-    #position_count = int(position_count)
-    #print(row)
-    #remaining_funds = int(remaining_funds)
-    #print("remaining funds ", remaining_funds, type(remaining_funds))
-    #positionSelector(remaining_funds, position_selector_high, position_selector_low, team_scoring_total, position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
-    #print("answer funds total: ", accumulated_remaining_funds)
-    #accumulated_remaining_funds = positionSelector(remaining_funds, position_selector_high, position_selector_low, accumulated_remaining_funds[1], position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
-    
-    #print("none is ", accumulated_remaining_funds)
-    #print("none is ", type(accumulated_remaining_funds))
-    #accumulated_remaining_funds[0] = int(accumulated_remaining_funds[0])
-    #res = tuple(int(num) for num in accumulated_remaining_funds('(', '').replace(')', '').replace('...', '').split(', '))
-  
-    #print(accumulated_remaining_funds[0], type(accumulated_remaining_funds[0]))
-    #print(accumulated_remaining_funds[1], type(accumulated_remaining_funds[1]))
-    #print(type(remaining_funds))
-    #print("error count shooting guard: ", error_count)
     error_count += 1
     accumulated_remaining_funds = positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total, position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
-   # res = tuple(int(num) for num in accumulated_remaining_funds('(', '').replace(')', '').replace('...', '').split(', '))
-
     
-    #print("arf 186: ", type(accumulated_remaining_funds))
     if accumulated_remaining_funds is None:
          
         pass
     else:
-        #accumulated_remaining_funds = positionSelector(remaining_funds, position_selector_high, position_selector_low, accumulated_remaining_funds[1], position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
-
+ 
         remaining_funds = accumulated_remaining_funds[0]
         accumulated_funds_holder = accumulated_remaining_funds[1]
         print(player_name, "scored: ", accumulated_remaining_funds[1])
         print("Team scoring total is: ", accumulated_funds_holder)
         print("You have ", remaining_funds, "remaining")
-    # if accumulated_remaining_funds != 0:
-    #     pass
-    # else:
-    #     print("we are here")
-    #     print("accumulated remaining funds", accumulated_remaining_funds, type(accumulated_remaining_funds))
-    #     accumulated_remaining_funds = int(accumulated_remaining_funds)    
-    #     remaining_funds = accumulated_remaining_funds
+  
 file_handle.close()     
 
 
@@ -330,14 +303,8 @@ csv_reader = DictReader(file_handle)
 table: List[Dict[str,float]] = []
 #print("team score right now: ", team_scoring_total)
 
-if position_count == 6:
-    computer_pick = 7
-    computer_remaining_funds = computer_remaining_funds - 4
-    print('The computer has drafted', player_name, type(player_name))
-else:
-    computer_pick = 6
-    computer_remaining_funds = computer_remaining_funds - 5
-    print('The computer has drafted', player_name)
+
+     
 
 for row in csv_reader:
     float_row: Dict[str, float] = {}
@@ -357,10 +324,19 @@ print("Kevin Garnett's salary is:           " , '$1 and his player code is: 10')
  
 
 position_count = input("Enter the player code of your shooting guard (i.e. Tim Duncan = 6): ")
+position_count = int(position_count)
+if position_count == 6:
+    computer_pick = 7
+    computer_remaining_funds = 7
+     
+else:
+    computer_pick = 6
+    computer_remaining_funds = 6
+
 player_scoring_total = 0
 position_selector_low = 6
 position_selector_high = 10
-#team_scoring_total = 0
+ 
 computer_player_found_flag = 'N'
 
 position_count = int(position_count)
@@ -383,33 +359,15 @@ for row in table:
     player_rings = float(row["rings"])
     player_defesive_rating = float(row["defensiveranking"])
     
-    print(position_count, computer_pick, computer_player_found_flag)
-    if position_count == computer_pick and position_count == 6 and computer_player_found_flag == 'N':
-        computer_pick = 7
-        computer_remaining_funds = 7
-        print('The computer has drafted', player_name, 'as its', player_position)
-        print("player flag", computer_player_found_flag)
-        computer_player_found_flag = 'Y'
-    elif position_count == computer_pick and position_count == 7 and computer_player_found_flag == 'N':
-        computer_pick = 6
-        computer_remaining_funds = 6
-        print('The computer has drafted', player_name)
-        computer_player_found_flag = 'Y'
-        print("player flag", computer_player_found_flag)
-
     if player_code == computer_pick:
         computer_player_scoring_total = playerScoringCalculator(player_name, player_ppg, player_rpg, player_apg, player_rings, player_defesive_rating)
         computer_team_scoring_total = computer_team_scoring_total + computer_player_scoring_total
+        print("The computer has drafted ", player_name)
         print(player_name, "has scored: ", computer_player_scoring_total, "for the computer")
         print("The computer has scored: ", computer_team_scoring_total, "total team points")
         print("The computer has ", computer_remaining_funds, "remaining in its salary cap")
-    
-    #position_count = int(position_count)
-    #print(row)
-    #print(player_code, type(player_code))
-
-    #print("remaining funds power forward: ", remaining_funds)
-    #print("team salary: ", player_name, player_salary)
+     
+     
 
     accumulated_remaining_funds = positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total, position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
     
@@ -462,6 +420,16 @@ print("Larry Bird's salary is:           " , '$3 and his player code is: 13')
 print("Scottie Pippen's salary is:       " , '$2 and his player code is: 14')
 print("James Worthy's salary is:         " , '$1 and his player code is: 15')
 position_count = input("Enter the player code of your shooting guard (i.e. Lebron James = 11): ")
+
+position_count = int(position_count)
+if position_count == 14:
+    computer_pick = 15
+    computer_remaining_funds = 7
+     
+else:
+    computer_pick = 14
+    computer_remaining_funds = 6
+
 player_scoring_total = 0
 #team_scoring_total = 0
 for row in table:
@@ -477,6 +445,16 @@ for row in table:
     player_apg = float(row["apg"])
     player_rings = float(row["rings"])
     player_defesive_rating = float(row["defensiveranking"])
+
+     
+
+    if player_code == computer_pick:
+        computer_player_scoring_total = playerScoringCalculator(player_name, player_ppg, player_rpg, player_apg, player_rings, player_defesive_rating)
+        computer_team_scoring_total = computer_team_scoring_total + computer_player_scoring_total
+        print(player_name, "has scored: ", computer_player_scoring_total, "for the computer")
+        print("The computer has scored: ", computer_team_scoring_total, "total team points")
+        print("The computer has ", computer_remaining_funds, "remaining in its salary cap")
+
      
     #position_count = int(position_count)
     #print(row)
@@ -534,6 +512,17 @@ print("Shaquille ONeal's salary is:            " , '$3 and his player code is: 1
 print("Bill Russell's salary is:               " , '$2 and his player code is: 19')
 print("Hakeem Olajuwon's salary is:            " , '$1 and his player code is: 20')
 position_count = input("Enter the player code of your shooting guard (i.e. Kareem Abdul Jabar = 21): ")
+
+position_count = int(position_count)
+if position_count == 19:
+    computer_pick = 20
+    computer_remaining_funds = 7
+     
+else:
+    computer_pick = 19
+    computer_remaining_funds = 6
+
+
 player_scoring_total = 0
 #team_scoring_total = 0
 for row in table:
@@ -549,7 +538,14 @@ for row in table:
     player_apg = float(row["apg"])
     player_rings = float(row["rings"])
     player_defesive_rating = float(row["defensiveranking"])
-     
+
+    if player_code == computer_pick:
+        computer_player_scoring_total = playerScoringCalculator(player_name, player_ppg, player_rpg, player_apg, player_rings, player_defesive_rating)
+        computer_team_scoring_total = computer_team_scoring_total + computer_player_scoring_total
+        print(player_name, "has scored: ", computer_player_scoring_total, "for the computer")
+        print("The computer has scored: ", computer_team_scoring_total, "total team points")
+        print("The computer has ", computer_remaining_funds, "remaining in its salary cap")
+  
     #position_count = int(position_count)
     #print(row)
     #print(player_code, type(player_code))
@@ -609,6 +605,16 @@ print("Isiah Thomas's salary is:          " , '$3 and his player code is: 23')
 print("John Stockton's salary is:         " , '$2 and his player code is: 24')
 print("Trey Young's salary is:            " , '$1 and his player code is: 25')
 position_count = input("Enter the player code of your shooting guard (i.e. Magic Johnson = 22): ")
+
+position_count = int(position_count)
+if position_count == 19:
+    computer_pick = 20
+    computer_remaining_funds = 7
+     
+else:
+    computer_pick = 19
+    computer_remaining_funds = 6
+
 player_scoring_total = 0
 #team_scoring_total = 0
 for row in table:
@@ -625,10 +631,15 @@ for row in table:
     player_rings = float(row["rings"])
     player_defesive_rating = float(row["defensiveranking"])
      
-    position_count = int(position_count)
-    #print(row)
-    #print(player_code, type(player_code))
+    if player_code == computer_pick:
+            computer_player_scoring_total = playerScoringCalculator(player_name, player_ppg, player_rpg, player_apg, player_rings, player_defesive_rating)
+            computer_team_scoring_total = computer_team_scoring_total + computer_player_scoring_total
+            print(player_name, "has scored: ", computer_player_scoring_total, "for the computer")
+            print("The computer has scored: ", computer_team_scoring_total, "total team points")
+            print("The computer has ", computer_remaining_funds, "remaining in its salary cap")
+  
 
+     
     accumulated_remaining_funds = positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total, position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
     
     if accumulated_remaining_funds is None:
