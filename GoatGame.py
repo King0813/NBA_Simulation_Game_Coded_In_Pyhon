@@ -1,3 +1,4 @@
+# this is the original code of the game. it's not fully functional and it's extrememly inefficient
 from csv import DictReader
 from typing import List, Dict
 
