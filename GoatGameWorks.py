@@ -655,11 +655,11 @@ for row in table:
         print("You have ", remaining_funds, " left to spend")
         print("total team points ", accumulated_funds_holder)
 
-    if accumulated_funds_holder > computer_team_scoring_total:
+    if accumulated_funds_holder > computer_team_scoring_total and remaining_funds >= 0:
         print("Congratulations You Beat The Computer!! You are the GOAT!!")
-    elif accumulated_funds_holder < computer_team_scoring_total
+    elif accumulated_funds_holder < computer_team_scoring_total:
         print("Unfortunately you lost. The computer is the GOAT")
-    else:
+    elif accumulated_funds_holder == computer_team_scoring_total and remaining_funds >= 0:
         print("Tie Game")
 
     # accumulated_remaining_funds = positionSelector(remaining_funds, position_selector_high, position_selector_low, team_scoring_total, position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
