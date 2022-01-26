@@ -12,6 +12,7 @@ point_guard_total = 0
 power_forward_total = 0
 small_forward_total = 0
 center_total = 0
+player_is_valid = True
 player_num_holder = []
 
 error_count = 0
@@ -96,6 +97,54 @@ def playerScoringCalculator(player_name, player_ppg, player_rpg, player_apg, pla
             print("Wow!!! ", player_name, "had a career high in all categories tonite his score has tripled!!")
             player_num_total = player_num_total * 3
     return player_num_total
+
+# def invalidPlayerSelected(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total  , position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating):
+#     pass
+#     player_found_flag = False
+     
+#     position_count = int(position_count)
+#     while player_found_flag is False:
+#         if position_count == player_code and position_count >=  position_selector_low and position_count <= position_selector_high:
+#             player_salary = int(player_salary)
+#             currency = 0
+#             currency = int(currency)
+#             print('You drafted', player_name, 'as your', player_position)
+             
+#             player_found_flag = 'Y'
+#             currency = remainingFundsFunction(team_scoring_total, player_found_flag, remaining_funds, player_salary)
+             
+#             if currency is None:
+#                 pass
+#             else:
+#                 funds_remaining = "${:,.2f}".format(currency)
+             
+#             player_scoring_total = playerScoringCalculator(player_name, player_ppg, player_rpg, player_apg, player_rings, player_defesive_rating)
+#             team_scoring_total = team_scoring_total + player_scoring_total
+#             if currency is None:
+#                 return 0,0
+#             else:
+                
+#                 return int(currency), int(team_scoring_total)
+            
+            
+        
+#         elif position_count < position_selector_low or position_count > position_selector_high:
+#             if error_count <= 2:
+#                 print("Error!! You must first choose a", player_position)
+#                 position_count = input("Enter the player code (i.e. Michael Jordan = 1): ")
+#                 #position_count = positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total  , position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)    
+#                 position_count = int(position_count)
+#                 print("error count before is ", error_count)
+#                 error_count += 1
+#                 print("error count  after is ", error_count)
+#             if error_count >= 3:
+#                 print("You've exceeded your attempts! Game Over")
+#                 quit()
+#                 return 0,0
+#                 break
+#         break
+
+        
     
 def positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total  , position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating):
         
@@ -125,24 +174,24 @@ def positionSelector(error_count, remaining_funds, position_selector_high, posit
             else:
                 
                 return int(currency), int(team_scoring_total)
-            
+        break        
             
         
-        elif position_count < position_selector_low or position_count > position_selector_high:
-            if error_count <= 2:
-                print("Error!! You must first choose a", player_position)
-                position_count = input("Enter the player code (i.e. Michael Jordan = 1): ")
-                #position_count = positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total  , position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)    
-                position_count = int(position_count)
-                print("error count before is ", error_count)
-                error_count += 1
-                print("error count  after is ", error_count)
-            if error_count >= 3:
-                print("You've exceeded your attempts! Game Over")
-                quit()
-                return 0,0
-                break
-        break
+        # elif position_count < position_selector_low or position_count > position_selector_high:
+        #     if error_count <= 2:
+        #         print("Error!! You must first choose a", player_position)
+        #         position_count = input("Enter the player code (i.e. Michael Jordan = 1): ")
+        #         #position_count = positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total  , position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)    
+        #         position_count = int(position_count)
+        #         print("error count before is ", error_count)
+        #         error_count += 1
+        #         print("error count  after is ", error_count)
+        #     if error_count >= 3:
+        #         print("You've exceeded your attempts! Game Over")
+        #         quit()
+        #         return 0,0
+        #         break
+        # break
 
 # def positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total  , position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating):
         
@@ -215,7 +264,7 @@ computer_team_scoring_total = 0
 computer_player_scoring_total = 0
 computer_remaining_funds = 15
 
-#error_count = 0
+error_count = 3
 
 for row in csv_reader:
     float_row: Dict[str, float] = {}
@@ -238,6 +287,49 @@ print('#################################################################')
  
 
 position_count = input("Enter the player code of your shooting guard (i.e. Michael Jordan = 1): ")
+position_count = int(position_count)
+
+print("position count", position_count)
+print(position_selector_low)
+print(position_selector_high)
+print(type(position_count))
+
+if position_count >= position_selector_low and position_count <= position_selector_high:
+    #6                     1                          6                5
+    player_is_valid = True
+    print("player is valid", player_is_valid)
+else:
+    print("you are here")
+    print("error count", error_count)
+    while error_count > 0:
+        print("Error!! You must first choose a shooting guard. You have", error_count, "chances left")
+        position_count = input("Enter the player code (i.e. Michael Jordan = 1): ")
+        position_count = int(position_count)
+        print("position count", position_count)
+        print(position_selector_low)
+        print(position_selector_high)
+        print(type(position_count))
+        
+        if position_count >= position_selector_low and position_count <= position_selector_high: 
+            error_count = 0
+
+        if position_count <= position_selector_low or position_count >= position_selector_high:
+            print("i'm back here")
+            print(error_count)
+            error_count = error_count - 1
+            print(error_count)
+
+             
+            # if error_count 
+            # else:
+            # error_count -= 1
+            if error_count == 0:
+                print("You've exceeded your attempts! Game Over")
+                quit()
+        #break
+
+        
+
 
 position_count = int(position_count)
 
