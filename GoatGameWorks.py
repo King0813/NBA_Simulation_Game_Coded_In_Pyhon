@@ -39,6 +39,35 @@ def show_homepage():
     
 show_homepage()
 
+
+def positonBypass(position_count, position_selector_low, position_selector_high, error_count): 
+
+    position_count = input("Enter the player code of your shooting guard (i.e. Michael Jordan = 1): ")
+    position_count = int(position_count)
+
+    
+    if position_count >= position_selector_low and position_count <= position_selector_high:
+        pass 
+        
+    else:
+        
+        while error_count > 0:
+            print("Error!! You must first choose a shooting guard. You have", error_count, "chances left")
+            position_count = input("Enter the player code (i.e. Michael Jordan = 1): ")
+            position_count = int(position_count)
+            
+            if position_count >= position_selector_low and position_count <= position_selector_high: 
+                error_count = 0
+
+            if position_count <= position_selector_low or position_count >= position_selector_high:
+                error_count = error_count - 1
+    
+                if error_count == 0:
+                    print("You've exceeded your attempts! Game Over")
+                    quit()
+    
+            
+
 def remainingFundsFunction(accumulated_funds_holder, player_found_flag, remaining_funds, player_salary):
 
     
@@ -263,6 +292,7 @@ computer_pick = 0
 computer_team_scoring_total = 0
 computer_player_scoring_total = 0
 computer_remaining_funds = 15
+position_count = 0
 
 error_count = 3
 
@@ -286,48 +316,32 @@ print("### Dwaye Wade's salary is:     " , '$1 and his player code is: 5 ###')
 print('#################################################################')
  
 
-position_count = input("Enter the player code of your shooting guard (i.e. Michael Jordan = 1): ")
-position_count = int(position_count)
+# position_count = input("Enter the player code of your shooting guard (i.e. Michael Jordan = 1): ")
+# position_count = int(position_count)
 
-print("position count", position_count)
-print(position_selector_low)
-print(position_selector_high)
-print(type(position_count))
+positon_count = positonBypass(position_count, position_selector_low, position_selector_high, error_count)
 
-if position_count >= position_selector_low and position_count <= position_selector_high:
-    #6                     1                          6                5
-    player_is_valid = True
-    print("player is valid", player_is_valid)
-else:
-    print("you are here")
-    print("error count", error_count)
-    while error_count > 0:
-        print("Error!! You must first choose a shooting guard. You have", error_count, "chances left")
-        position_count = input("Enter the player code (i.e. Michael Jordan = 1): ")
-        position_count = int(position_count)
-        print("position count", position_count)
-        print(position_selector_low)
-        print(position_selector_high)
-        print(type(position_count))
+
+# if position_count >= position_selector_low and position_count <= position_selector_high:
+#    pass 
+    
+# else:
+    
+#     while error_count > 0:
+#         print("Error!! You must first choose a shooting guard. You have", error_count, "chances left")
+#         position_count = input("Enter the player code (i.e. Michael Jordan = 1): ")
+#         position_count = int(position_count)
         
-        if position_count >= position_selector_low and position_count <= position_selector_high: 
-            error_count = 0
+#         if position_count >= position_selector_low and position_count <= position_selector_high: 
+#             error_count = 0
 
-        if position_count <= position_selector_low or position_count >= position_selector_high:
-            print("i'm back here")
-            print(error_count)
-            error_count = error_count - 1
-            print(error_count)
-
-             
-            # if error_count 
-            # else:
-            # error_count -= 1
-            if error_count == 0:
-                print("You've exceeded your attempts! Game Over")
-                quit()
-        #break
-
+#         if position_count <= position_selector_low or position_count >= position_selector_high:
+#             error_count = error_count - 1
+ 
+#             if error_count == 0:
+#                 print("You've exceeded your attempts! Game Over")
+#                 quit()
+ 
         
 
 
@@ -395,6 +409,11 @@ file_handle =  open("playerdatabase.csv", "r", encoding="utf8")
 csv_reader = DictReader(file_handle)
 table: List[Dict[str,float]] = []
 #print("team score right now: ", team_scoring_total)
+computer_pick = 0
+position_count = 0
+position_selector_low = 6
+position_selector_high = 10
+error_count = 3
 
 
      
@@ -416,7 +435,8 @@ print("Karl Malone's salary is:             " , '$2 and his player code is: 9')
 print("Kevin Garnett's salary is:           " , '$1 and his player code is: 10')
  
 
-position_count = input("Enter the player code of your shooting guard (i.e. Tim Duncan = 6): ")
+positon_count = positonBypass(position_count, position_selector_low, position_selector_high, error_count)
+
 position_count = int(position_count)
 if position_count == 6:
     computer_pick = 7
@@ -426,9 +446,6 @@ else:
     computer_pick = 6
     computer_remaining_funds = computer_remaining_funds - 5
 
-player_scoring_total = 0
-position_selector_low = 6
-position_selector_high = 10
  
 computer_player_found_flag = 'N'
 
@@ -494,6 +511,9 @@ error_count = 0
 file_handle =  open("playerdatabase.csv", "r", encoding="utf8")
 csv_reader = DictReader(file_handle)
 table: List[Dict[str,float]] = []
+computer_pick = 0
+position_count = 0
+error_count = 3
 position_selector_low = 11
 position_selector_high = 15
  
@@ -512,7 +532,7 @@ print("Kevin Durant's salary is:         " , '$4 and his player code is: 12')
 print("Larry Bird's salary is:           " , '$3 and his player code is: 13')
 print("Scottie Pippen's salary is:       " , '$2 and his player code is: 14')
 print("James Worthy's salary is:         " , '$1 and his player code is: 15')
-position_count = input("Enter the player code of your shooting guard (i.e. Lebron James = 11): ")
+positon_count = positonBypass(position_count, position_selector_low, position_selector_high, error_count)
 
 position_count = int(position_count)
 if position_count == 14:
@@ -585,7 +605,9 @@ csv_reader = DictReader(file_handle)
 table: List[Dict[str,float]] = []
 position_selector_low = 16
 position_selector_high = 20
-error_count = 0
+error_count = 3
+computer_pick = 0
+position_count = 0
 
 
 for row in csv_reader:
@@ -604,7 +626,7 @@ print("Wilt Chamberlin's salary is:            " , '$4 and his player code is: 1
 print("Shaquille ONeal's salary is:            " , '$3 and his player code is: 18')
 print("Bill Russell's salary is:               " , '$2 and his player code is: 19')
 print("Hakeem Olajuwon's salary is:            " , '$1 and his player code is: 20')
-position_count = input("Enter the player code of your shooting guard (i.e. Kareem Abdul Jabar = 21): ")
+positon_count = positonBypass(position_count, position_selector_low, position_selector_high, error_count)
 
 position_count = int(position_count)
 if position_count == 19:
@@ -675,10 +697,11 @@ file_handle.close()
 file_handle =  open("playerdatabase.csv", "r", encoding="utf8")
 csv_reader = DictReader(file_handle)
 table: List[Dict[str,float]] = []
-position_selector_low = 21
-position_selector_high = 25
-error_count = 0
-
+position_selector_low = 16
+position_selector_high = 20
+error_count = 3
+position_count = 0
+computer_pick = 0
 
 for row in csv_reader:
     float_row: Dict[str, float] = {}
@@ -697,7 +720,7 @@ print("Steph Curry's salary is:           " , '$4 and his player code is: 22')
 print("Isiah Thomas's salary is:          " , '$3 and his player code is: 23')
 print("John Stockton's salary is:         " , '$2 and his player code is: 24')
 print("Trey Young's salary is:            " , '$1 and his player code is: 25')
-position_count = input("Enter the player code of your shooting guard (i.e. Magic Johnson = 22): ")
+positon_count = positonBypass(position_count, position_selector_low, position_selector_high, error_count)
 
 position_count = int(position_count)
 if position_count == 24:
