@@ -13,22 +13,6 @@ port_id  = 5432
 conn     = None
 cur     =  None
 
-###### Allows user to bypass script when invallid database credentials 
-###### are entered and script can't connect to database 
-
-
-try:
-    conn = psycopg2.connect(
-        host = hostname,
-        dbname = database, 
-        user = username,  
-        password = pwd,
-        port = port_id)
-    cur = conn.cursor()
-    
-    
-except Exception as error:
-    print(error)
 
  
 ##### script closes database if original coonnection was succesful #######
@@ -51,6 +35,9 @@ small_forward_total = 0
 center_total = 0
 player_is_valid = True
 player_num_holder = []
+user_first_name = ' '
+user_last_initial = ' '
+            
 
 error_count = 0
 position_selector_high = 20
@@ -664,6 +651,11 @@ for row in table:
 
     if accumulated_funds_holder > computer_team_scoring_total and remaining_funds >= 0:
         print("Congratulations You Beat The Computer!! You are the GOAT!!")
+        user_flag = input("Would you like to be added to the Wall of Winners? (Y/N)")
+        if user_flag == "Y":
+            user_first_name = input("Please enter your first name: ")
+            user_last_initial = input("Please enter the initial of your last name")
+
     elif accumulated_funds_holder < computer_team_scoring_total:
         print("Unfortunately you lost. The computer is the GOAT")
     elif accumulated_funds_holder == computer_team_scoring_total and remaining_funds >= 0:
@@ -671,3 +663,41 @@ for row in table:
 
     
 file_handle.close()      
+
+###### Allows user to bypass script when invallid database credentials 
+###### are entered and script can't connect to database 
+
+
+try:
+    conn = psycopg2.connect(
+        host = hostname,
+        dbname = database, 
+        user = username,  
+        password = pwd,
+        port = port_id)
+    
+    cur = conn.cursor()
+
+    create_script = ''' CREATE TABLE IF NOT EXISTS player (
+                            rank            int,
+                            player_id       int PRIMARY KEY,
+                            first_name      varchar (40),
+                            last_initial    varchar (40),
+                            score           int) '''
+    cur.execute(create_script)
+
+    # insert_script = 'INSERT INTO player (rank, player_id, first_name, last_initial, score) VALUES (%s, %s, %s, %s)'
+
+    # insert_values = (rank, player_id, first_name, last_name_initial, player_total_score)
+    # for record in insert_values:
+    #     cur.execute(insert_script, record)
+
+    conn.execute = (insert_script, insert_value)
+
+
+    conn.commit()
+    
+    
+except Exception as error:
+    print(error)
+
