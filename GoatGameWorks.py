@@ -1,6 +1,27 @@
 import csv
 from distutils.log import error
 import random
+import psycopg2
+
+####### connect to database that lists winners of the game #######
+
+hostname = 'localhost'
+database = 'GoatGameWinnersWall'
+username = 'postgres'
+pwd      = 'More2007'
+port_id  = 5432
+conn     = None
+cur     =  None
+
+
+ 
+##### script closes database if original coonnection was succesful #######
+
+finally:
+    if cur is not None:
+        cur.close()
+    if conn is not None:
+        conn.close()
 
 from csv import DictReader
 import re
@@ -14,9 +35,11 @@ small_forward_total = 0
 center_total = 0
 player_is_valid = True
 player_num_holder = []
+user_first_name = ' '
+user_last_initial = ' '
+            
 
 error_count = 0
-print("error count beginning: ", error_count)
 position_selector_high = 20
 position_selector_low = 16
 team_scoring_total = 0
@@ -39,6 +62,7 @@ def show_homepage():
     
 show_homepage()
 
+####### invoked when user gives incorrect entry when prompted to select a player ######## 
 
 def positonBypass(position_count, position_selector_low, position_selector_high, error_count): 
 
@@ -67,6 +91,7 @@ def positonBypass(position_count, position_selector_low, position_selector_high,
                     quit()
     
             
+########## calculates the available salary cap for user's team #############
 
 def remainingFundsFunction(accumulated_funds_holder, player_found_flag, remaining_funds, player_salary):
 
@@ -84,7 +109,7 @@ def remainingFundsFunction(accumulated_funds_holder, player_found_flag, remainin
             return int(accumulated_funds_holder)
          
 
-        
+############ calculates score for each individual player and cumluative team score         
 
 def playerScoringCalculator(player_name, player_ppg, player_rpg, player_apg, player_rings, player_defesive_rating):
 
@@ -93,6 +118,9 @@ def playerScoringCalculator(player_name, player_ppg, player_rpg, player_apg, pla
      
     player_num_total = sum(player_num_total)
     player_ring_multiplier = 0
+
+    ########## calculates bonuses determined by number of championchips won
+
     if player_rings == 1:
         player_ring_multiplier = player_rings * 1.5
         player_num_total = player_num_total * player_ring_multiplier
@@ -106,17 +134,30 @@ def playerScoringCalculator(player_name, player_ppg, player_rpg, player_apg, pla
         player_ring_multiplier = player_rings * 4.5
         player_num_total = player_num_total * player_ring_multiplier
     
+    ########## calculates bonuses determined by defensive rating 
+
     if player_defesive_rating > 2 and player_defesive_rating < 4: 
         player_num_total = player_num_total * 1.25
     elif player_defesive_rating > 4:
         player_num_total = player_num_total * 1.5
     
+
+
+    ############### takes random nuber to determine whether or not the player
+    ############### suffered a injury. There is a 7% chance of injury. Injury 
+    ############### will cause player score to be zero
+      
     injury_odds_start = 1
     injury_odds_end = 100
     career_high_start = 1
     career_high_end = 100
     random_number =  random.randrange(injury_odds_start,injury_odds_end)
     career_high_random_number =  random.randrange(career_high_start,career_high_end)
+    
+    ############### takes random nuber to determine whether or not the player
+    ############### had a career game. There is a 7% chance of such a game. 
+    ############### This will cause player score to triple 
+
     if random_number > 10 and random_number < 18:
         player_num_total = 0
         print("Unfortunately, ", player_name, "was hurt during shoot around and he is out for the remainder of the game with zero points scored")
@@ -127,53 +168,8 @@ def playerScoringCalculator(player_name, player_ppg, player_rpg, player_apg, pla
             player_num_total = player_num_total * 3
     return player_num_total
 
-# def invalidPlayerSelected(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total  , position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating):
-#     pass
-#     player_found_flag = False
-     
-#     position_count = int(position_count)
-#     while player_found_flag is False:
-#         if position_count == player_code and position_count >=  position_selector_low and position_count <= position_selector_high:
-#             player_salary = int(player_salary)
-#             currency = 0
-#             currency = int(currency)
-#             print('You drafted', player_name, 'as your', player_position)
-             
-#             player_found_flag = 'Y'
-#             currency = remainingFundsFunction(team_scoring_total, player_found_flag, remaining_funds, player_salary)
-             
-#             if currency is None:
-#                 pass
-#             else:
-#                 funds_remaining = "${:,.2f}".format(currency)
-             
-#             player_scoring_total = playerScoringCalculator(player_name, player_ppg, player_rpg, player_apg, player_rings, player_defesive_rating)
-#             team_scoring_total = team_scoring_total + player_scoring_total
-#             if currency is None:
-#                 return 0,0
-#             else:
-                
-#                 return int(currency), int(team_scoring_total)
-            
-            
-        
-#         elif position_count < position_selector_low or position_count > position_selector_high:
-#             if error_count <= 2:
-#                 print("Error!! You must first choose a", player_position)
-#                 position_count = input("Enter the player code (i.e. Michael Jordan = 1): ")
-#                 #position_count = positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total  , position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)    
-#                 position_count = int(position_count)
-#                 print("error count before is ", error_count)
-#                 error_count += 1
-#                 print("error count  after is ", error_count)
-#             if error_count >= 3:
-#                 print("You've exceeded your attempts! Game Over")
-#                 quit()
-#                 return 0,0
-#                 break
-#         break
-
-        
+########### called after the user selects a player for a specific position
+###########  returns the remaining salary cap and the total team score    
     
 def positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total  , position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating):
         
@@ -205,80 +201,8 @@ def positionSelector(error_count, remaining_funds, position_selector_high, posit
                 return int(currency), int(team_scoring_total)
         break        
             
+####### for each respective positon the user selects their respective player       
         
-        # elif position_count < position_selector_low or position_count > position_selector_high:
-        #     if error_count <= 2:
-        #         print("Error!! You must first choose a", player_position)
-        #         position_count = input("Enter the player code (i.e. Michael Jordan = 1): ")
-        #         #position_count = positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total  , position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)    
-        #         position_count = int(position_count)
-        #         print("error count before is ", error_count)
-        #         error_count += 1
-        #         print("error count  after is ", error_count)
-        #     if error_count >= 3:
-        #         print("You've exceeded your attempts! Game Over")
-        #         quit()
-        #         return 0,0
-        #         break
-        # break
-
-# def positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total  , position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating):
-        
-#     #error_count = 0
-#     #print("we made it", remaining_funds)
-
-#     #print("salary cap in function: ", remaining_funds)    
-#     player_found_flag = False
-#     #print("cound, low, high", position_count, position_selector_low, position_selector_high)   
-#     #print(type(position_count), type(position_selector_low), type(position_selector_high)) 
-#     position_count = int(position_count)
-#     while player_found_flag is False:
-#         if position_count == player_code and position_count >=  position_selector_low and position_count <= position_selector_high:
-#             player_salary = int(player_salary)
-#             currency = 0
-#             currency = int(currency)
-#             print('You drafted', player_name, 'as your', player_position)
-#             #print(type(currency), type(player_salary))
-#             #print("fund in function", remaining_funds, player_salary)
-#             player_found_flag = 'Y'
-#             currency = remainingFundsFunction(team_scoring_total, player_found_flag, remaining_funds, player_salary)
-#             #print("currency, fund_after_function: ",  currency, remaining_funds, player_salary)
-#             if currency is None:
-#                 pass
-#             else:
-#                 funds_remaining = "${:,.2f}".format(currency)
-#             #print('You have', funds_remaining, 'left in your salary cap')
-#             player_scoring_total = playerScoringCalculator(player_name, player_ppg, player_rpg, player_apg, player_rings, player_defesive_rating)
-#             #print(player_name, player_ppg, player_rpg, player_apg, player_rings, player_defesive_rating)
-#             #print("team scoring total before: ", team_scoring_total)
-#             team_scoring_total = team_scoring_total + player_scoring_total
-#             #print("player scoring after ", player_scoring_total)
-#             #print("team scoring total before: ", team_scoring_total)
-             
-#             #print("player score: ", player_scoring_total)
-#             if currency is None:
-#                 return 0,0
-#             else:
-#                 #print("team scoring total before return statemnt", team_scoring_total)
-#                 return int(currency), int(team_scoring_total)
-            
-            
-        
-#         elif position_count < position_selector_low or position_count > position_selector_high:
-#             if error_count <= 2:
-#                 print("Error!! You must first choose a", player_position)
-#                 position_count = input("Enter the player code (i.e. Michael Jordan = 1): ")
-#                 #position_count = positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total  , position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)    
-#                 position_count = int(position_count)
-#                 print("error count before is ", error_count)
-#                 error_count += 1
-#                 print("error count  after is ", error_count)
-#             if error_count >= 3:
-#                 print("You've exceeded your attempts! Game Over")
-#                 quit()
-#                 return 0,0
-#                 break
-#         break
 
 ######### Shooting Guard Selection #########
  
@@ -296,6 +220,9 @@ position_count = 0
 
 error_count = 3
 
+
+####### builds table from csv file 
+
 for row in csv_reader:
     float_row: Dict[str, float] = {}
     for column in row:
@@ -303,7 +230,7 @@ for row in csv_reader:
     table.append(float_row)
     
 
-# player_code,name,position,salary,ppg,rpg,apg,rings,defensiveranking
+ 
 player_name: str = ' '
 print('                                ')
 print('#################################################################')
@@ -316,36 +243,13 @@ print("### Dwaye Wade's salary is:     " , '$1 and his player code is: 5 ###')
 print('#################################################################')
  
 
-# position_count = input("Enter the player code of your shooting guard (i.e. Michael Jordan = 1): ")
-# position_count = int(position_count)
-
 positon_count = positonBypass(position_count, position_selector_low, position_selector_high, error_count)
 
 
-# if position_count >= position_selector_low and position_count <= position_selector_high:
-#    pass 
-    
-# else:
-    
-#     while error_count > 0:
-#         print("Error!! You must first choose a shooting guard. You have", error_count, "chances left")
-#         position_count = input("Enter the player code (i.e. Michael Jordan = 1): ")
-#         position_count = int(position_count)
-        
-#         if position_count >= position_selector_low and position_count <= position_selector_high: 
-#             error_count = 0
-
-#         if position_count <= position_selector_low or position_count >= position_selector_high:
-#             error_count = error_count - 1
- 
-#             if error_count == 0:
-#                 print("You've exceeded your attempts! Game Over")
-#                 quit()
- 
-        
-
-
 position_count = int(position_count)
+
+####### determines who the computer will draft based on who the user drafts
+
 
 if position_count == 1:
     computer_pick = 2
@@ -357,17 +261,15 @@ else:
     print('The computer has drafted', player_name)
 
  
-
-
-
 player_scoring_total = 0
-#team_scoring_total = 0
+
+########## iterates through table to define values for respective variables 
+##########  while calling functions that tabulate user and computer scores
+
 for row in table:
     
     player_name = row["name"]
     player_code = int(row["player_code"])
-    
-    
     player_position = row["position"]
     player_salary = int(row["salary"])
     player_ppg = float(row["ppg"])
@@ -403,12 +305,10 @@ file_handle.close()
 
 ########### Power Forward ###################
 
-#print("remaining funds at start of function", remaining_funds)
 error_count = 0
 file_handle =  open("playerdatabase.csv", "r", encoding="utf8")
 csv_reader = DictReader(file_handle)
 table: List[Dict[str,float]] = []
-#print("team score right now: ", team_scoring_total)
 computer_pick = 0
 position_count = 0
 position_selector_low = 6
@@ -416,7 +316,7 @@ position_selector_high = 10
 error_count = 3
 
 
-     
+####### builds table from csv file     
 
 for row in csv_reader:
     float_row: Dict[str, float] = {}
@@ -424,8 +324,7 @@ for row in csv_reader:
         float_row[column] = str(row[column])
     table.append(float_row)
     
-
-# player_code,name,position,salary,ppg,rpg,apg,rings,defensiveranking
+ 
 player_name: str = ' '
 print("----------------Next You Will Select A Power Forward --------------------------")
 print("Tim Duncan's salary is:              " , '$5 and his player code is: 6')
@@ -452,7 +351,8 @@ computer_player_found_flag = 'N'
 position_count = int(position_count)
 print("position count type in forward", type(position_count))
 
-
+########## iterates through table to define values for respective variables 
+##########  while calling functions that tabulate user and computer scores
 
 
 for row in table:
@@ -492,17 +392,7 @@ for row in table:
         print(player_name, "scored: ", accumulated_remaining_funds[1]) 
         print("You have ", remaining_funds, " left to spend")
         print("total team points ", accumulated_funds_holder)
-    #positionSelector(remaining_funds, position_selector_high, position_selector_low, team_scoring_total, position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
-    
-    # accumulated_remaining_funds = positionSelector(remaining_funds, position_selector_high, position_selector_low, team_scoring_total, position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
-    # if accumulated_remaining_funds != 0:
-    #     pass
-    # else:
-    #     print("we are here")
-    #     print("accumulated remaining funds", accumulated_remaining_funds, type(accumulated_remaining_funds))
-    #     accumulated_remaining_funds = int(accumulated_remaining_funds)    
-    #     remaining_funds = accumulated_remaining_funds
-
+     
 file_handle.close()      
 
 ################# Small Forward ###############
@@ -517,6 +407,7 @@ error_count = 3
 position_selector_low = 11
 position_selector_high = 15
  
+######## builds table from csv file 
 
 for row in csv_reader:
     float_row: Dict[str, float] = {}
@@ -544,7 +435,10 @@ else:
     computer_remaining_funds = computer_remaining_funds - 2
 
 player_scoring_total = 0
-#team_scoring_total = 0
+
+########## iterates through table and assigns value to respective variables
+############# calculates player totals and team totals
+
 for row in table:
     
     player_name = row["name"]
@@ -568,10 +462,6 @@ for row in table:
         print("The computer has scored: ", computer_team_scoring_total, "total team points")
         print("The computer has ", computer_remaining_funds, "remaining in its salary cap")
 
-     
-    #position_count = int(position_count)
-    #print(row)
-    #print(player_code, type(player_code))
 
     accumulated_remaining_funds = positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total, position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
    
@@ -579,22 +469,12 @@ for row in table:
     if accumulated_remaining_funds is None:
         pass
     else:
-        #print("answer: ", accumulated_remaining_funds)
         remaining_funds = accumulated_remaining_funds[0]
-        #print(accumulated_remaining_funds)
         accumulated_funds_holder =  accumulated_funds_holder + accumulated_remaining_funds[1]
 
         print(player_name, "scored: ", accumulated_remaining_funds[1]) 
         print("You have ", remaining_funds, " left to spend")
         print("total team points ", accumulated_funds_holder)
-    # accumulated_remaining_funds = positionSelector(remaining_funds, position_selector_high, position_selector_low, team_scoring_total, position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
-    # if accumulated_remaining_funds != 0:
-    #     pass
-    # else:
-    #     print("we are here")
-    #     print("accumulated remaining funds", accumulated_remaining_funds, type(accumulated_remaining_funds))
-    #     accumulated_remaining_funds = int(accumulated_remaining_funds)    
-    #     remaining_funds = accumulated_remaining_funds
 
 file_handle.close()      
      
@@ -609,6 +489,7 @@ error_count = 3
 computer_pick = 0
 position_count = 0
 
+############# builds table from csv file
 
 for row in csv_reader:
     float_row: Dict[str, float] = {}
@@ -618,7 +499,6 @@ for row in csv_reader:
     
     
 
-# player_code,name,position,salary,ppg,rpg,apg,rings,defensiveranking
 player_name: str = ' '
 print("----------------Next You Will Select A Center --------------------------")
 print("Kareem Abdul-Jabar's salary is:         " , '$5 and his player code is: 16')
@@ -639,7 +519,10 @@ else:
 
 
 player_scoring_total = 0
-#team_scoring_total = 0
+
+############# iterates through table to assign values to variables
+############# calculates player totals and team totals
+
 for row in table:
     
     player_name = row["name"]
@@ -661,16 +544,14 @@ for row in table:
         print("The computer has scored: ", computer_team_scoring_total, "total team points")
         print("The computer has ", computer_remaining_funds, "remaining in its salary cap")
   
-    #position_count = int(position_count)
-    #print(row)
-    #print(player_code, type(player_code))
+     
 
     accumulated_remaining_funds = positionSelector(error_count, remaining_funds, position_selector_high, position_selector_low, team_scoring_total, position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
     
     if accumulated_remaining_funds is None:
         pass
     else:
-        #print("answer: ", accumulated_remaining_funds)
+         
         remaining_funds = accumulated_remaining_funds[0]
         print(accumulated_remaining_funds)
         accumulated_funds_holder =  accumulated_funds_holder + accumulated_remaining_funds[1]
@@ -678,15 +559,7 @@ for row in table:
         print(player_name, "scored: ", accumulated_remaining_funds[1]) 
         print("You have ", remaining_funds, " left to spend")
         print("total team points ", accumulated_funds_holder)
-    # accumulated_remaining_funds = positionSelector(remaining_funds, position_selector_high, position_selector_low, team_scoring_total, position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
-    # if accumulated_remaining_funds != 0:
-    #     pass
-    # else:
-    #     print("we are here")
-    #     print("accumulated remaining funds", accumulated_remaining_funds, type(accumulated_remaining_funds))
-    #     accumulated_remaining_funds = int(accumulated_remaining_funds)    
-    #     remaining_funds = accumulated_remaining_funds
-
+     
 file_handle.close()      
      
 
@@ -703,6 +576,8 @@ error_count = 3
 position_count = 0
 computer_pick = 0
 
+########### builds table from csv file
+
 for row in csv_reader:
     float_row: Dict[str, float] = {}
     for column in row:
@@ -710,7 +585,7 @@ for row in csv_reader:
     table.append(float_row)
     
 
-# player_code,name,position,salary,ppg,rpg,apg,rings,defensiveranking
+ 
 player_name: str = ' '
 
  
@@ -732,7 +607,11 @@ else:
     computer_remaining_funds = computer_remaining_funds - 2
 
 player_scoring_total = 0
-#team_scoring_total = 0
+
+############# iterates through table to assign values to variables
+############# calculates player totals and team totals
+
+
 for row in table:
     
     player_name = row["name"]
@@ -761,9 +640,9 @@ for row in table:
     if accumulated_remaining_funds is None:
         pass
     else:
-        #print("answer: ", accumulated_remaining_funds)
+         
         remaining_funds = accumulated_remaining_funds[0]
-        #print(accumulated_remaining_funds)
+         
         accumulated_funds_holder =  accumulated_funds_holder + accumulated_remaining_funds[1]
 
         print(player_name, "scored: ", accumulated_remaining_funds[1]) 
@@ -772,33 +651,53 @@ for row in table:
 
     if accumulated_funds_holder > computer_team_scoring_total and remaining_funds >= 0:
         print("Congratulations You Beat The Computer!! You are the GOAT!!")
+        user_flag = input("Would you like to be added to the Wall of Winners? (Y/N)")
+        if user_flag == "Y":
+            user_first_name = input("Please enter your first name: ")
+            user_last_initial = input("Please enter the initial of your last name")
+
     elif accumulated_funds_holder < computer_team_scoring_total:
         print("Unfortunately you lost. The computer is the GOAT")
     elif accumulated_funds_holder == computer_team_scoring_total and remaining_funds >= 0:
         print("Tie Game")
 
-    # accumulated_remaining_funds = positionSelector(remaining_funds, position_selector_high, position_selector_low, team_scoring_total, position_count, player_name, player_position, player_salary, player_ppg, player_apg, player_rings, player_defesive_rating)
-    # if accumulated_remaining_funds != 0:
-    #     pass
-    # else:
-    #     print("we are here")
-    #     print("accumulated remaining funds", accumulated_remaining_funds, type(accumulated_remaining_funds))
-    #     accumulated_remaining_funds = int(accumulated_remaining_funds)    
-    #     remaining_funds = accumulated_remaining_funds
+    
 file_handle.close()      
-     
+
+###### Allows user to bypass script when invallid database credentials 
+###### are entered and script can't connect to database 
 
 
+try:
+    conn = psycopg2.connect(
+        host = hostname,
+        dbname = database, 
+        user = username,  
+        password = pwd,
+        port = port_id)
     
+    cur = conn.cursor()
 
-    
-    
-    
+    create_script = ''' CREATE TABLE IF NOT EXISTS player (
+                            rank            int,
+                            player_id       int PRIMARY KEY,
+                            first_name      varchar (40),
+                            last_initial    varchar (40),
+                            score           int) '''
+    cur.execute(create_script)
+
+    # insert_script = 'INSERT INTO player (rank, player_id, first_name, last_initial, score) VALUES (%s, %s, %s, %s)'
+
+    # insert_values = (rank, player_id, first_name, last_name_initial, player_total_score)
+    # for record in insert_values:
+    #     cur.execute(insert_script, record)
+
+    conn.execute = (insert_script, insert_value)
 
 
+    conn.commit()
+    
+    
+except Exception as error:
+    print(error)
 
-    
-
-    
-    
-    
